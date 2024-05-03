@@ -65,7 +65,7 @@ class ProgressStepsWidgetPainter extends CustomPainter {
         center,
         radius + 25,
         VwColors.fourth,
-        strokeWidth,
+        strokeWidth * 0.70,
         startAngleDot,
         sweepAngleDot,
         hasRoundedCap: true,
