@@ -10,10 +10,15 @@ import 'package:provider/provider.dart';
 import 'package:viswals/app/constants/env.dart';
 import 'package:viswals/app/helpers/api/api_helper.dart';
 import 'package:viswals/app/helpers/debugger_helper.dart';
-import 'package:viswals/app/helpers/state_helper.dart';
 import 'package:viswals/app/routes/route.dart';
 import 'package:viswals/app/routes/route.dart' as route;
+import 'package:viswals/domain/providers/country/country_depencies.dart';
+import 'package:viswals/domain/providers/country/country_local_provider.dart';
+import 'package:viswals/domain/providers/user/user_dependencies.dart';
+import 'package:viswals/domain/providers/user/user_local_provider.dart';
+import 'package:viswals/domain/services/user/user_service.dart';
 import 'package:viswals/ui/splashscreen/splahscreen_page.dart';
+import 'package:viswals/ui/widgets/progress_circle/progress_circle_state.dart';
 
 class RootView extends StatelessWidget {
   const RootView({super.key});
@@ -24,14 +29,26 @@ class RootView extends StatelessWidget {
       providers: [
         // State Manager
         ChangeNotifierProvider(create: (_) => ProgressCircleState()),
+
+        // Persistence Providers
+        Provider<UserProviderProtocol>(create: (_) => UserLocalProvider()),
+        Provider<CountryProviderProtocol>(
+            create: (_) => CountryLocalProvider()),
       ],
-      child: const RootViewStage(),
+      child: RootViewStage(
+          serviceUser: UserService(
+        provider: UserLocalProvider(),
+      )),
     );
   }
 }
 
 class RootViewStage extends StatefulWidget {
-  const RootViewStage({super.key});
+  final UserService serviceUser;
+  const RootViewStage({
+    super.key,
+    required this.serviceUser,
+  });
 
   @override
   State<RootViewStage> createState() => _RootViewStageState();
@@ -72,7 +89,7 @@ class _RootViewStageState extends State<RootViewStage>
   Future<ApiResponse<Routes>> setUpConfiguration() async {
     try {
       // Simulating a connection delay
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 1));
 
       // Loading environment variables
       await setEnvronmentValues();
@@ -87,18 +104,18 @@ class _RootViewStageState extends State<RootViewStage>
       await setUpFirebaseRemoteConfig();
 
       // Setup the firebase notification
-      final fcmToken = await setUpFirebaseMessaging();
+      await setUpFirebaseMessaging();
 
       // Device information
       await setUpDeviceInformation();
 
       // Setup the user
-      await setUpUserSession(fcmToken: fcmToken);
+      await setUpUserSession();
 
       // If everything goes well, we will present our first page here
       return ApiResponse(
         success: true,
-        object: Routes.onboardingPage,
+        object: Routes.documentDetailsHomePage,
       );
     } catch (e) {
       Log.e('[root.view]', error: e);
@@ -155,7 +172,9 @@ class _RootViewStageState extends State<RootViewStage>
     // Geo Localization, App Version, Operacional System name, etc...
   }
 
-  Future setUpUserSession({String? fcmToken}) async {
+  Future setUpUserSession() async {
     // Here we can storage and update the user session with the backend
+
+    await widget.serviceUser.setUpUserSession();
   }
 }

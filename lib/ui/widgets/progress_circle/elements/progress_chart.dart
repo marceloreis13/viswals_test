@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:viswals/theme/vw_colors.dart';
 import 'package:viswals/theme/vw_text_styles.dart';
 import 'dart:math' as math;
-import 'package:viswals/ui/widgets/progress_circle/progress_model.dart';
+import 'package:viswals/domain/models/user/user_progress_model.dart';
 
 class ProgressCircleChartWidget extends StatefulWidget {
-  final List<ProgressStepsModel> steps;
+  final List<UserProgressStepsModel> steps;
 
   const ProgressCircleChartWidget({
     super.key,

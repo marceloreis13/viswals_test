@@ -38,11 +38,11 @@ extension ApiErrorExtension on ApiError {
   }
 }
 
-enum ApiServices {
-  access,
+enum CountryServices {
+  all,
 }
 
-extension ApiServicesExtension on ApiServices {
+extension CountryServicesExtension on CountryServices {
   Dio get http {
     return Api.url(this);
   }
@@ -68,13 +68,13 @@ extension ApiServicesExtension on ApiServices {
 class Api {
   static String idempotencyKey = '';
 
-  static Dio url(ApiServices key) {
+  static Dio url(CountryServices key) {
     BaseOptions options = BaseOptions(
       contentType: 'application/json',
       baseUrl: key.absoluteUrl,
       connectTimeout: Duration(seconds: Env.connectionTimeout),
       receiveTimeout: Duration(seconds: Env.connectionTimeout),
-      headers: key.headers,
+      // headers: key.headers,
     );
     Dio dio = Dio(options);
 
@@ -82,11 +82,11 @@ class Api {
       InterceptorsWrapper(
         onRequest:
             (RequestOptions options, RequestInterceptorHandler handler) async {
-          // await Future.delayed(const Duration(seconds: 2));
-
           final log =
               "API REQUEST\n${options.method}: ${options.baseUrl}${options.path}\nDATA SENT:${options.data.toString()}";
           Log.i(log);
+
+          return handler.next(options);
         },
         onResponse: (Response response, ResponseInterceptorHandler handler) {
           return handler.next(response);

@@ -2,16 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 
 enum StateManager {
+  form,
   progressCircle,
-}
-
-extension StateManagerExtension on StateManager {
-  StateHelper get state {
-    switch (this) {
-      case StateManager.progressCircle:
-        return ProgressCircleState();
-    }
-  }
 }
 
 class StateHelper extends ChangeNotifier {
@@ -20,4 +12,4 @@ class StateHelper extends ChangeNotifier {
   }
 }
 
-class ProgressCircleState extends StateHelper {}
+class FormState extends StateHelper {}

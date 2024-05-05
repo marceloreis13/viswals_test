@@ -20,7 +20,7 @@ class ScaffoldClean extends StatelessWidget {
     this.backgroundColor,
     required this.body,
   }) : super() {
-    assert(title != null || titleText != null,
+    assert(appBar != null || title != null || titleText != null,
         'Either "title" or "titleText" should be informed');
   }
 

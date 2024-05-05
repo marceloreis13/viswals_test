@@ -3,10 +3,10 @@ import 'package:viswals/theme/vw_colors.dart';
 import 'package:viswals/ui/widgets/progress_circle/elements/progress_chart.dart';
 import 'dart:math' as math;
 
-import 'package:viswals/ui/widgets/progress_circle/progress_model.dart';
+import 'package:viswals/domain/models/user/user_progress_model.dart';
 
 class ProgressStepsWidget extends StatelessWidget {
-  final List<ProgressStepsModel> steps;
+  final List<UserProgressStepsModel> steps;
 
   const ProgressStepsWidget({
     super.key,
@@ -28,7 +28,7 @@ class ProgressStepsWidget extends StatelessWidget {
 }
 
 class ProgressStepsWidgetPainter extends CustomPainter {
-  final List<ProgressStepsModel> steps;
+  final List<UserProgressStepsModel> steps;
 
   ProgressStepsWidgetPainter({
     required this.steps,
@@ -44,7 +44,7 @@ class ProgressStepsWidgetPainter extends CustomPainter {
   void buildStep(
     Canvas canvas,
     Size size,
-    ProgressStepsModel step,
+    UserProgressStepsModel step,
     int position,
   ) {
     const dividerWidth = 0.04;

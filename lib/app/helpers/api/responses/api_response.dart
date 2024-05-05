@@ -1,3 +1,5 @@
+import 'package:viswals/app/helpers/debugger_helper.dart';
+
 class ApiResponse<T> {
   late bool success;
   int? code;
@@ -13,34 +15,15 @@ class ApiResponse<T> {
     this.list,
   });
 
-  ApiResponse.fromJsonToMap(Map<String, dynamic> json) {
-    success = json['success'] ?? false;
-    code = json['code'];
-    message = json['message'];
-    object = json['object'];
-    if (json['data'].isNotEmpty) {
-      list = List<Map<String, dynamic>>.from(json['data']);
+  ApiResponse.fromJsonToMap(json) {
+    if (json.isNotEmpty) {
+      success = true;
+      list = List<Map<String, dynamic>>.from(json);
     }
   }
 
-  ApiResponse.fromJsonToObject(Map<String, dynamic> json) {
-    success = json['success'];
-    code = json['code'];
-    message = json['message'];
-    object = json['data'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['success'] = success;
-    data['code'] = code;
-    data['message'] = message;
-    data['data'] = object;
-    data['list'] = object;
-    return data;
-  }
-
   factory ApiResponse.genericError(dynamic error) {
+    Log.e("Generic Error", error: error);
     return ApiResponse(
       success: false,
       message: 'Loc.tr.unexpectedError',
