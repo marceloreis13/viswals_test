@@ -41,23 +41,29 @@ class DocumentDetailsService extends ChangeNotifier {
     }
   }
 
-  bool isFilled() {
+  bool isDocTypeFilled() {
     final isFilled = userService.user.docType != null;
     return isFilled;
   }
 
-  Map<String, dynamic Function()> loadUserDocTypeOptions(
+  bool isDocAndCountryFilled() {
+    final isFilled =
+        userService.user.doc != null && userService.user.country != null;
+    return isFilled;
+  }
+
+  Map<UserDocType, dynamic Function()> loadUserDocTypeOptions(
     BuildContext context,
     Function() completion,
   ) {
     final options = {
-      'Passport': () {
+      UserDocType.passport: () {
         final user = Env.user.copyWith(docType: UserDocType.passport);
         userService.setUser(user);
         userService.setStepAsCompleted(docDetailTypeStep, context);
         completion();
       },
-      'National Card': () {
+      UserDocType.nationalCard: () {
         final user = Env.user.copyWith(docType: UserDocType.nationalCard);
         userService.setUser(user);
         userService.setStepAsCompleted(docDetailTypeStep, context);
@@ -77,22 +83,28 @@ class DocumentDetailsService extends ChangeNotifier {
     }
 
     userService.setUser(user);
-    validateCountryPageProgress(context);
+    updateCountryPageProgress(context);
   }
 
   void onBtnCountryTapped(Country country, BuildContext context) {
     final user = Env.user.copyWith(country: country);
     userService.setUser(user);
 
-    validateCountryPageProgress(context);
+    updateCountryPageProgress(context);
   }
 
-  void validateCountryPageProgress(BuildContext context) {
+  void updateCountryPageProgress(BuildContext context) {
     final isCompleted = Env.user.doc != null && Env.user.country != null;
     userService.setStepAsCompleted(
       docDetailCountryStep,
       context,
       isCompleted: isCompleted,
     );
+  }
+
+  void requestFocusIfNeeded(FocusNode focus) {
+    if (userService.user.doc == null) {
+      focus.requestFocus();
+    }
   }
 }

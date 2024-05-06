@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viswals/app/routes/route.dart';
@@ -11,6 +13,7 @@ import 'package:viswals/ui/features/document_details/widgets/document_details_pr
 import 'package:viswals/ui/widgets/app_bars/vw_app_bar.dart';
 import 'package:viswals/ui/widgets/buttons/vw_dropdown_button.dart';
 import 'package:viswals/ui/widgets/buttons/vw_primary_button.dart';
+import 'package:viswals/ui/widgets/buttons/vw_secondary_button.dart';
 import 'package:viswals/ui/widgets/scaffolds/scaffold_clean.dart';
 import 'package:viswals/ui/widgets/text_fields/vw_text_field.dart';
 
@@ -21,7 +24,7 @@ class DocumentDetailsCountryPage extends StatefulWidget {
           // State Manager
           ChangeNotifierProvider(
             lazy: false,
-            create: (context) => DocumentDetailsTypeState(),
+            create: (context) => DocumentDetailsCountryState(),
           ),
           ChangeNotifierProvider(
             lazy: false,
@@ -40,13 +43,20 @@ class DocumentDetailsCountryPage extends StatefulWidget {
 
 class DocumentDetailsViewState extends State<DocumentDetailsCountryPage> {
   late DocumentDetailsService service;
-  late DocumentDetailsTypeState docTypeState;
+  late DocumentDetailsCountryState pageState;
+  late FocusNode _focusNode;
   final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     initialSetUp();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -67,6 +77,19 @@ class DocumentDetailsViewState extends State<DocumentDetailsCountryPage> {
             color: VwColors.primaryFont,
           ),
         ),
+        actions: [
+          TextButton(
+            child: Text(
+              'skip',
+              style: VwTextStyles.listItemText,
+            ),
+            onPressed: () {
+              service.userService.setAsNextStep(context);
+              // Navigator.of(context)
+              //     .pushNamed(Routes.documentDetailsProfilePage.route);
+            },
+          )
+        ],
       ),
       body: content,
     );
@@ -86,7 +109,7 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
           const SizedBox(height: 48),
           form,
           const Spacer(),
-          nextButton,
+          actions,
         ],
       ),
     );
@@ -110,6 +133,7 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
 
   Widget get numberField => VWTextFieldWidget(
         labelText: 'Number',
+        focusNode: _focusNode,
         initialValue: service.userService.user.doc,
         keyboardType: TextInputType.number,
         onChanged: (value) {
@@ -119,7 +143,7 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
 
   Widget get countryField => Column(
         children: [
-          Consumer<DocumentDetailsTypeState>(
+          Consumer<DocumentDetailsCountryState>(
             builder: (context, value, child) {
               return VWDropDownButtonWidget(
                 title: 'Country',
@@ -137,21 +161,44 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
         ],
       );
 
-  Widget get nextButton {
+  Widget get actions {
     return Column(
       children: [
-        Consumer<DocumentDetailsTypeState>(builder: (context, value, child) {
-          return VWPrimaryButtonWidget(
-            title: 'NEXT',
-            disabled: !service.isFilled(),
-            onPressed: () {
-              print('HERE');
-            },
-          );
-        }),
+        Row(
+          children: [
+            Expanded(child: prevButton),
+            const SizedBox(width: 16),
+            Expanded(child: nextButton),
+          ],
+        ),
         const SizedBox(height: 16),
       ],
     );
+  }
+
+  Widget get prevButton {
+    return VWSecondaryButtonWidget(
+      title: 'PREV',
+      disabled: false,
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+  }
+
+  Widget get nextButton {
+    return Consumer<DocumentDetailsCountryState>(
+        builder: (context, value, child) {
+      return VWPrimaryButtonWidget(
+        title: 'NEXT',
+        disabled: !service.isDocAndCountryFilled(),
+        onPressed: !service.isDocAndCountryFilled()
+            ? null
+            : () {
+                print('HERE');
+              },
+      );
+    });
   }
 }
 
@@ -159,11 +206,13 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
 
 extension DocumentDetailsFunctionsExt on DocumentDetailsViewState {
   void initialSetUp() {
+    _focusNode = FocusNode();
     service = context.read<DocumentDetailsService>();
-    docTypeState = context.read<DocumentDetailsTypeState>();
+    pageState = context.read<DocumentDetailsCountryState>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      service.validateCountryPageProgress(context);
+      service.requestFocusIfNeeded(_focusNode);
+      service.updateCountryPageProgress(context);
     });
   }
 }

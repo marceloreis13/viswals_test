@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:viswals/domain/models/user/user_constants.dart';
 import 'package:viswals/ui/widgets/buttons/vw_options_button.dart';
 
 class BottomSheetOptionsWidget extends StatelessWidget {
-  final Map<String, Function()> options;
+  final Map<UserDocType, Function()> options;
   const BottomSheetOptionsWidget({
     super.key,
     required this.options,
@@ -28,11 +29,11 @@ class BottomSheetOptionsWidget extends StatelessWidget {
   List<Widget> buildOptions(BuildContext context) {
     List<Widget> optionWidgets = [];
 
-    options.forEach((title, onPressed) {
+    options.forEach((item, onPressed) {
       final widget = Column(
         children: [
           VWOptionsButtonWidget(
-            title: title,
+            title: item.title,
             onPressed: () {
               onPressed();
               Navigator.of(context).pop();

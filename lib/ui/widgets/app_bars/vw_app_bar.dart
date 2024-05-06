@@ -5,11 +5,13 @@ class VwAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget title;
   final Widget? leading;
   final Color backgroundColor;
+  final List<Widget>? actions;
 
   const VwAppBar({
     super.key,
     required this.title,
     this.leading,
+    this.actions,
     this.backgroundColor = VwColors.primary,
   });
 
@@ -19,6 +21,7 @@ class VwAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: title,
       backgroundColor: backgroundColor,
       leading: leading,
+      actions: actions,
     );
   }
 

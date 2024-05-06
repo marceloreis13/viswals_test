@@ -5,6 +5,7 @@ import 'package:viswals/theme/vw_text_styles.dart';
 class VWTextFieldWidget extends StatelessWidget {
   final String? labelText;
   final String? initialValue;
+  final FocusNode? focusNode;
   final void Function()? onTap;
   final TextInputType? keyboardType;
   final void Function(String)? onChanged;
@@ -16,6 +17,7 @@ class VWTextFieldWidget extends StatelessWidget {
     this.onChanged,
     this.keyboardType,
     this.initialValue,
+    this.focusNode,
   });
 
   @override
@@ -29,6 +31,7 @@ class VWTextFieldWidget extends StatelessWidget {
       child: TextFormField(
         initialValue: initialValue,
         keyboardType: keyboardType,
+        focusNode: focusNode,
         onTap: onTap,
         onChanged: onChanged,
         style: VwTextStyles.bodySmallAlt,

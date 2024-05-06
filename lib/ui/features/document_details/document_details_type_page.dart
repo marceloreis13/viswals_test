@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:viswals/app/constants/constant.dart';
 import 'package:viswals/app/routes/route.dart';
+import 'package:viswals/domain/models/user/user_constants.dart';
 import 'package:viswals/domain/providers/country/country_depencies.dart';
 import 'package:viswals/domain/providers/user/user_dependencies.dart';
 import 'package:viswals/domain/services/document_details/document_details_service.dart';
@@ -41,7 +42,7 @@ class DocumentDetailsTypePage extends StatefulWidget {
 
 class DocumentDetailsViewState extends State<DocumentDetailsTypePage> {
   late DocumentDetailsService service;
-  late DocumentDetailsTypeState docTypeState;
+  late DocumentDetailsTypeState pageState;
 
   @override
   void initState() {
@@ -58,15 +59,28 @@ class DocumentDetailsViewState extends State<DocumentDetailsTypePage> {
           style: VwTextStyles.headlineSmall,
         ),
         leading: IconButton(
-          onPressed: () {
-            service.userService.setAsFirstStep();
-            Navigator.of(context).pop();
-          },
           icon: const Icon(
             Icons.arrow_back_ios,
             color: VwColors.primaryFont,
           ),
+          onPressed: () {
+            service.userService.setAsFirstStep();
+            Navigator.of(context).pop();
+          },
         ),
+        actions: [
+          TextButton(
+            child: Text(
+              'skip',
+              style: VwTextStyles.listItemText,
+            ),
+            onPressed: () {
+              service.userService.setAsNextStep(context);
+              Navigator.of(context)
+                  .pushNamed(Routes.documentDetailsCountryPage.route);
+            },
+          )
+        ],
       ),
       body: content,
     );
@@ -102,7 +116,7 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
           builder: (context, value, child) {
             return VWDropDownButtonWidget(
               title: 'Type',
-              value: service.userService.user.docType?.name,
+              value: service.userService.user.docType?.title,
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
@@ -110,7 +124,7 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
                   builder: (BuildContext context) {
                     return BottomSheetOptionsWidget(
                       options: service.loadUserDocTypeOptions(context, () {
-                        docTypeState.refresh();
+                        pageState.refresh();
                       }),
                     );
                   },
@@ -129,8 +143,8 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
         Consumer<DocumentDetailsTypeState>(builder: (context, value, child) {
           return VWPrimaryButtonWidget(
             title: 'NEXT',
-            disabled: !service.isFilled(),
-            onPressed: !service.isFilled()
+            disabled: !service.isDocTypeFilled(),
+            onPressed: !service.isDocTypeFilled()
                 ? null
                 : () {
                     service.userService.setAsNextStep(context);
@@ -150,7 +164,7 @@ extension DocumentDetailsWidgetsExt on DocumentDetailsViewState {
 extension DocumentDetailsFunctionsExt on DocumentDetailsViewState {
   void initialSetUp() {
     service = context.read<DocumentDetailsService>();
-    docTypeState = context.read<DocumentDetailsTypeState>();
+    pageState = context.read<DocumentDetailsTypeState>();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       service.userService.setStepAsActive(docDetailTypeStep, context);

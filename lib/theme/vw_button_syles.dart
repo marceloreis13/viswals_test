@@ -26,7 +26,18 @@ class VwButtonStyles {
   static ButtonStyle primaryButtonDisabled = ButtonStyle(
     shape: squaredShape,
     backgroundColor:
-        MaterialStateProperty.all(VwColors.fourth.withOpacity(0.3)),
+        MaterialStateProperty.all(VwColors.fourth.withOpacity(0.15)),
+  );
+
+  static ButtonStyle secondaryButton = ButtonStyle(
+    shape: squaredShape,
+    backgroundColor: MaterialStateProperty.all(VwColors.thirth),
+  );
+
+  static ButtonStyle secondaryButtonDisabled = ButtonStyle(
+    shape: squaredShape,
+    backgroundColor:
+        MaterialStateProperty.all(VwColors.thirth.withOpacity(0.15)),
   );
 
   static ButtonStyle optionButton = ButtonStyle(

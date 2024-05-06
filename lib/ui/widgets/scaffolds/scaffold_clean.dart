@@ -28,15 +28,25 @@ class ScaffoldClean extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return content;
+    return content(context);
   }
 
-  Widget get content {
+  Widget content(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: appBar ?? defaultAppBar,
       backgroundColor: backgroundColor ?? VwColors.background,
-      body: SafeArea(child: body),
+      body: GestureDetector(
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
+          // FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: SafeArea(child: body),
+      ),
     );
   }
 

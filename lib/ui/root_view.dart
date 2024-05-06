@@ -83,7 +83,17 @@ class _RootViewStageState extends State<RootViewStage>
       navigatorKey: Routes.navigatorKey,
     );
 
-    return app;
+    return GestureDetector(
+      onTap: () {
+        FocusScopeNode currentFocus = FocusScope.of(context);
+
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+        // FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: app,
+    );
   }
 
   Future<ApiResponse<Routes>> setUpConfiguration() async {
